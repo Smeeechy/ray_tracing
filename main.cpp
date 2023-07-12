@@ -4,7 +4,22 @@
 
 #include <iostream>
 
+double rng() {
+  return static_cast<double>(rand()) / (RAND_MAX);
+}
+
+bool hit_sphere(const point3 sphere_origin, const double sphere_radius, const ray r) {
+  const vec3 oc = r.origin() - sphere_origin;
+  const double a = dot(r.direction(), r.direction());
+  const double b = 2 * dot(oc, r.direction());
+  const double c = dot(oc, oc) - (sphere_radius * sphere_radius);
+  const double discriminant = (b * b) - (4 * a * c);
+  return discriminant > 0;
+}
+
 color ray_color(const ray r) {
+  if (hit_sphere(point3(0, 0, -1), 0.5, r)) return {rng(), rng(), rng()};
+  
   // map y value of unit vector of given ray's direction between 0 and 1
   vec3 unit_direction = unit_vector(r.direction());
   double t = 0.5 * (unit_direction.y() + 1);
@@ -20,7 +35,7 @@ int main() {
   
   // image
   const double aspect_ratio = 16.0 / 9.0;
-  const int image_width = 400;
+  const int image_width = 1000;
   const int image_height = static_cast<int>(image_width / aspect_ratio);
   
   // camera
