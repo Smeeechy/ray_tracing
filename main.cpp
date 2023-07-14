@@ -1,19 +1,13 @@
+#include "util.h"
+#include "entity_list.h"
 #include "color.h"
-#include "vec3.h"
-#include "ray.h"
 #include "sphere.h"
 
 #include <iostream>
 
-color ray_color(const ray r) {
-  // return color based off normal vector of hit sphere
-  const sphere ball(point3(0, 0, -1), 0.5);
-  hit_record hit_record;
-  if (ball.hit(r, -100, 100, hit_record)) {
-    double t = hit_record.t;
-    const vec3 normal = unit_vector(r.at(t) - point3(0, 0, -1));
-    return 0.5 * color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
-  }
+color ray_color(const ray r, const entity &world) {
+  hit_record record;
+  if (world.hit(r, 0, infinity, record)) return 0.5 * (record.normal + color(1, 1, 1));
   
   // ray didn't hit anything, show the background gradient
   const vec3 unit_direction = unit_vector(r.direction());
@@ -27,8 +21,13 @@ int main() {
   
   // image
   const double aspect_ratio = 16.0 / 9.0;
-  const int image_width = 256;
+  const int image_width = 1200;
   const int image_height = static_cast<int>(image_width / aspect_ratio);
+  
+  // world
+  entity_list world;
+  world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
+  world.add(make_shared<sphere>(point3(0, -1000.5, -1), 1000));
   
   // camera
   const double viewport_height = 2.0;
@@ -48,7 +47,7 @@ int main() {
       const double v = static_cast<double>(row) / (image_height - 1);
       const vec3 direction = lower_left_corner + (u * horizontal) + (v * vertical) - origin;
       const ray r(origin, direction);
-      color pixel_color = ray_color(r);
+      color pixel_color = ray_color(r, world);
       write_color(std::cout, pixel_color);
     }
   }
