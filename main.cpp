@@ -4,16 +4,6 @@
 
 #include <iostream>
 
-double hit_sphere(const point3 sphere_center, const double sphere_radius, const ray r) {
-  const vec3 oc = r.origin() - sphere_center;
-  const double a = r.direction().length_squared();
-  const double half_b = dot(oc, r.direction());
-  const double c = oc.length_squared() - (sphere_radius * sphere_radius);
-  const double discriminant = (half_b * half_b) - (a * c);
-  if (discriminant < 0) return -1;
-  else return (-half_b - sqrt(discriminant)) / a;
-}
-
 color ray_color(const ray r) {
   // return color based off normal vector of hit sphere
   double t = hit_sphere(point3(0, 0, -1), 0.5, r);
