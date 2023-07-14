@@ -4,30 +4,29 @@
 
 #include <iostream>
 
-double rng() {
-  return static_cast<double>(rand()) / (RAND_MAX);
-}
-
-bool hit_sphere(const point3 sphere_origin, const double sphere_radius, const ray r) {
-  const vec3 oc = r.origin() - sphere_origin;
+double hit_sphere(const point3 sphere_center, const double sphere_radius, const ray r) {
+  const vec3 oc = r.origin() - sphere_center;
   const double a = dot(r.direction(), r.direction());
   const double b = 2 * dot(oc, r.direction());
   const double c = dot(oc, oc) - (sphere_radius * sphere_radius);
   const double discriminant = (b * b) - (4 * a * c);
-  return discriminant > 0;
+  if (discriminant < 0) return -1;
+  else return (-b - sqrt(discriminant)) / (2 * a);
 }
 
 color ray_color(const ray r) {
-  if (hit_sphere(point3(0, 0, -1), 0.5, r)) return {rng(), rng(), rng()};
+  // return color based off normal vector of hit sphere
+  double t = hit_sphere(point3(0, 0, -1), 0.5, r);
+  if (t > 0) {
+    const vec3 normal = unit_vector(r.at(t) - point3(0, 0, -1));
+    return 0.5 * color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
+  }
   
-  // map y value of unit vector of given ray's direction between 0 and 1
-  vec3 unit_direction = unit_vector(r.direction());
-  double t = 0.5 * (unit_direction.y() + 1);
-  
+  // ray didn't hit anything, show the background gradient
+  const vec3 unit_direction = unit_vector(r.direction());
+  t = 0.5 * (unit_direction.y() + 1);
   color gradient_start(1, 1, 1);    // white
   color gradient_end(0.5, 0.7, 1);  // sky blue
-  
-  // simple linear interpolation
   return ((1 - t) * gradient_start) + (t * gradient_end);
 }
 
@@ -35,7 +34,7 @@ int main() {
   
   // image
   const double aspect_ratio = 16.0 / 9.0;
-  const int image_width = 1000;
+  const int image_width = 256;
   const int image_height = static_cast<int>(image_width / aspect_ratio);
   
   // camera
