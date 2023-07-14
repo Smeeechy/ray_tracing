@@ -1,23 +1,26 @@
 #include "color.h"
 #include "vec3.h"
 #include "ray.h"
+#include "sphere.h"
 
 #include <iostream>
 
 color ray_color(const ray r) {
   // return color based off normal vector of hit sphere
-  double t = hit_sphere(point3(0, 0, -1), 0.5, r);
-  if (t > 0) {
+  const sphere ball(point3(0, 0, -1), 0.5);
+  hit_record hit_record;
+  if (ball.hit(r, -100, 100, hit_record)) {
+    double t = hit_record.t;
     const vec3 normal = unit_vector(r.at(t) - point3(0, 0, -1));
     return 0.5 * color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
   }
   
   // ray didn't hit anything, show the background gradient
   const vec3 unit_direction = unit_vector(r.direction());
-  t = 0.5 * (unit_direction.y() + 1);
+  double sky_t = 0.5 * (unit_direction.y() + 1);
   color gradient_start(1, 1, 1);    // white
   color gradient_end(0.5, 0.7, 1);  // sky blue
-  return ((1 - t) * gradient_start) + (t * gradient_end);
+  return ((1 - sky_t) * gradient_start) + (sky_t * gradient_end);
 }
 
 int main() {
