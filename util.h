@@ -34,6 +34,12 @@ inline double drand(const double min, const double max) {
   return min + (max - min) * drand(); // returns a random number [min, max)
 }
 
+inline double clamp(const double x, const double min, const double max) {
+  if (x < min) return min;
+  if (x > max) return max;
+  return x;
+}
+
 // common headers
 #include "ray.h"
 #include "vec3.h"
