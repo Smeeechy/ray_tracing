@@ -21,13 +21,13 @@ int main() {
   
   // image
   const double aspect_ratio = 16.0 / 9.0;
-  const int image_width = 1200;
+  const int image_width = 640;
   const int image_height = static_cast<int>(image_width / aspect_ratio);
   
   // world
   entity_list world;
   world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
-  world.add(make_shared<sphere>(point3(0, -1000.5, -1), 1000));
+  world.add(make_shared<sphere>(point3(0, -100.5, -1), 100));
   
   // camera
   const double viewport_height = 2.0;
