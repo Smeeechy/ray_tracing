@@ -14,7 +14,7 @@ color ray_color(const ray &ray_, const entity &world, const int depth) {
   if (depth <= 0) return {0, 0, 0};
   
   hit_record record;
-  diffusion_method method = HEMISPHERIC;
+  diffusion_method method = QUICK;
   if (world.hit(ray_, 0.001, infinity, record)) { // 0.001 corrects for shadow acne
     point3 target;
     switch (method) {
@@ -45,7 +45,7 @@ int main() {
   
   // image
   const double aspect_ratio = 16.0 / 9.0;
-  const int image_width = 400;
+  const int image_width = 640;
   const int image_height = static_cast<int>(image_width / aspect_ratio);
   const int samples_per_pixel = 100;
   const int max_depth = 50;
