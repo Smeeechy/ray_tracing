@@ -6,12 +6,30 @@
 
 #include <iostream>
 
+enum diffusion_method {
+  QUICK, TRUE_LAMBERTIAN, HEMISPHERIC
+};
+
 color ray_color(const ray &ray_, const entity &world, const int depth) {
   if (depth <= 0) return {0, 0, 0};
   
   hit_record record;
+  diffusion_method method = HEMISPHERIC;
   if (world.hit(ray_, 0.001, infinity, record)) { // 0.001 corrects for shadow acne
-    point3 target = record.point + record.normal + random_in_unit_sphere();
+    point3 target;
+    switch (method) {
+      case TRUE_LAMBERTIAN:
+        target = record.point + record.normal + random_unit_vector();
+        break;
+        
+      case HEMISPHERIC:
+        target = record.point + random_in_hemisphere(record.normal);
+        break;
+  
+      default:
+        target = record.point + record.normal + random_in_unit_sphere();
+        break;
+    }
     return 0.5 * ray_color(ray(record.point, target - record.point), world, depth - 1);
   }
   

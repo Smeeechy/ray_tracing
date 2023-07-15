@@ -128,6 +128,16 @@ vec3 random_in_unit_sphere() {
   }
 }
 
+vec3 random_unit_vector() {
+  return unit_vector(random_in_unit_sphere());
+}
+
+vec3 random_in_hemisphere(const vec3 normal) {
+  vec3 random = random_in_unit_sphere();
+  if (dot(random, normal) > 0) return random;
+  else return -random;
+}
+
 // type aliases
 using point3 = vec3;  // cartesian coordinates
 using color = vec3;   // rgb colors
