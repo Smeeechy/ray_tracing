@@ -5,6 +5,8 @@
 #ifndef RAY_TRACING_SPHERE_H
 #define RAY_TRACING_SPHERE_H
 
+#include <utility>
+
 #include "entity.h"
 #include "vec3.h"
 
@@ -12,8 +14,11 @@ class sphere : public entity {
   public:
   const point3 center;
   const double radius;
+  const shared_ptr<material> material_ptr;
   
-  sphere(point3 center_, double radius_) : center(center_), radius(radius_) {};
+  sphere(point3 center_, double radius_, shared_ptr<material> material_ptr_) :
+    center(center_), radius(radius_), material_ptr(std::move(material_ptr_)) {};
+  
   [[nodiscard]] bool hit(ray r, double t_min, double t_max, hit_record &record) const override;
 };
 
@@ -40,6 +45,7 @@ bool sphere::hit(const ray r, const double t_min, const double t_max, hit_record
   record.point = r.at(root);
   const vec3 outward_normal = (r.at(root) - center) / radius;
   record.set_face_normal(r, outward_normal);
+  record.material_ptr = material_ptr;
   
   return true;
 }

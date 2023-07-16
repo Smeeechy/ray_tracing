@@ -6,10 +6,14 @@
 #define RAY_TRACING_ENTITY_H
 
 #include "ray.h"
+#include "util.h"
+
+class material;
 
 struct hit_record {
   point3 point;
   vec3 normal;
+  shared_ptr<material> material_ptr;
   double t = 0;
   bool front_face = true;
   
