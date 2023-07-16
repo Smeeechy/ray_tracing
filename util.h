@@ -43,5 +43,6 @@ inline double clamp(const double x, const double min, const double max) {
 // common headers
 #include "ray.h"
 #include "vec3.h"
+#include "entity.h"
 
 #endif //RAY_TRACING_UTIL_H

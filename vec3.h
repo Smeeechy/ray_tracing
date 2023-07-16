@@ -73,6 +73,11 @@ class vec3 {
     return *this *= (1 / scalar);
   }
   
+  [[nodiscard]] bool near_zero() const {
+    const double minimum = 1e-8;
+    return fabs(values[0]) < minimum && fabs(values[1]) < minimum && fabs(values[2]) < minimum;
+  }
+  
 };
 
 // utility functions
