@@ -125,6 +125,10 @@ inline vec3 unit_vector(vec3 v) {
   return v / v.length();
 }
 
+inline vec3 reflect(const vec3 incident, const vec3 normal) {
+  return incident - (2 * dot(incident, normal) * normal);
+}
+
 vec3 random_in_unit_sphere() {
   while (true) {
     vec3 random = vec3::random(-1, 1);

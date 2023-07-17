@@ -1,36 +1,21 @@
 #include "util.h"
-#include "entity_list.h"
 #include "color.h"
+#include "entity_list.h"
 #include "sphere.h"
 #include "camera.h"
+#include "material.h"
 
 #include <iostream>
-
-enum diffusion_method {
-  QUICK, TRUE_LAMBERTIAN, HEMISPHERIC
-};
 
 color ray_color(const ray &ray_, const entity &world, const int depth) {
   if (depth <= 0) return {0, 0, 0};
   
   hit_record record;
-  diffusion_method method = QUICK;
   if (world.hit(ray_, 0.001, infinity, record)) { // 0.001 corrects for shadow acne
-    point3 target;
-    switch (method) {
-      case TRUE_LAMBERTIAN:
-        target = record.point + record.normal + random_unit_vector();
-        break;
-        
-      case HEMISPHERIC:
-        target = record.point + random_in_hemisphere(record.normal);
-        break;
-  
-      default:
-        target = record.point + record.normal + random_in_unit_sphere();
-        break;
-    }
-    return 0.5 * ray_color(ray(record.point, target - record.point), world, depth - 1);
+    ray scattered;
+    color attenuation;
+    if (record.material_ptr->scatter(ray_, record, attenuation, scattered)) return attenuation * ray_color(scattered, world, depth - 1);
+    return {0, 0, 0};
   }
   
   // ray didn't hit anything, show the background gradient
@@ -52,8 +37,14 @@ int main() {
   
   // world
   entity_list world;
-  world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
-  world.add(make_shared<sphere>(point3(0, -100.5, -1), 100));
+  const shared_ptr<material> material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+  const shared_ptr<material> material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
+  const shared_ptr<material> material_left = make_shared<metal>(color(0.8, 0.8, 0.8));
+  const shared_ptr<material> material_right = make_shared<metal>(color(0.8, 0.6, 0.2));
+  world.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
+  world.add(make_shared<sphere>(point3(0.0, 0.0, -1.0), 0.5, material_center));
+  world.add(make_shared<sphere>(point3(-1.0, 0.0, -1.0), 0.5, material_left));
+  world.add(make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
   
   // camera
   const camera cam;

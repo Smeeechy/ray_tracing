@@ -5,7 +5,6 @@
 #ifndef RAY_TRACING_ENTITY_H
 #define RAY_TRACING_ENTITY_H
 
-#include "ray.h"
 #include "util.h"
 
 class material;
