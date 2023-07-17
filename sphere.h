@@ -16,16 +16,16 @@ class sphere : public entity {
   const double radius;
   const shared_ptr<material> material_ptr;
   
-  sphere(point3 center_, double radius_, shared_ptr<material> material_ptr_) :
-    center(center_), radius(radius_), material_ptr(std::move(material_ptr_)) {};
+  sphere(point3 center, double radius, shared_ptr<material> material_ptr) :
+    center(center), radius(radius), material_ptr(std::move(material_ptr)) {};
   
-  [[nodiscard]] bool hit(ray r, double t_min, double t_max, hit_record &record) const override;
+  [[nodiscard]] bool hit(ray incident, double t_min, double t_max, hit_record& record) const override;
 };
 
-bool sphere::hit(const ray r, const double t_min, const double t_max, hit_record &record) const {
-  const vec3 oc = r.origin() - center;
-  const double a = r.direction().length_squared();
-  const double half_b = dot(oc, r.direction());
+bool sphere::hit(const ray incident, const double t_min, const double t_max, hit_record& record) const {
+  const vec3 oc = incident.origin() - center;
+  const double a = incident.direction().length_squared();
+  const double half_b = dot(oc, incident.direction());
   const double c = oc.length_squared() - (radius * radius);
   
   // no hit
@@ -42,9 +42,9 @@ bool sphere::hit(const ray r, const double t_min, const double t_max, hit_record
   
   // save hit data
   record.t = root;
-  record.point = r.at(root);
-  const vec3 outward_normal = (r.at(root) - center) / radius;
-  record.set_face_normal(r, outward_normal);
+  record.point_of_contact = incident.at(root);
+  const vec3 outward_normal = (incident.at(root) - center) / radius;
+  record.set_face_normal(incident, outward_normal);
   record.material_ptr = material_ptr;
   
   return true;

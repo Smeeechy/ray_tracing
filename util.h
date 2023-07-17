@@ -24,20 +24,20 @@ inline double radians(const double degrees) {
   return degrees * pi / 180.0;
 }
 
-inline double drand() {
+inline double random_double() {
   static std::uniform_real_distribution<double> distribution(0.0, 1.0);
   static std::mt19937 generator;
   return distribution(generator);
 }
 
-inline double drand(const double min, const double max) {
-  return min + (max - min) * drand(); // returns a random number [min, max)
+inline double random_double(const double min, const double max) {
+  return min + (max - min) * random_double(); // returns a random number [min, max)
 }
 
-inline double clamp(const double x, const double min, const double max) {
-  if (x < min) return min;
-  if (x > max) return max;
-  return x;
+inline double clamp(const double value, const double min, const double max) {
+  if (value < min) return min;
+  if (value > max) return max;
+  return value;
 }
 
 // common headers
